@@ -57,10 +57,23 @@ This consitutes our master data set and it is exported for training and testing.
 #### Model Training
 
 ```
-Main file - training/class_model.ipynb
+Main file - training/trad_model.ipynb
+Optional file - training/gbm_model.ipynb
 ```
 
+Now that you have a data set ready for training, you have some options in terms of modeling.  Optionally, you can choose to train a gradient-boosted model (XGBoost in this case).  The optional file will allow you to tune hyperparameters and select a model to save.  The main file will allow you to train the following sci-kit learn models:
 
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">Logistic Regression</a>
+
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html">Gaussian Naive Bayes</a>
+
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.htmlDecision">Decision Tree</a>
+
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html">Random Forest</a>
+
+Of course, you can add to this list by appropriately importing and adding a model to <i>scaled_models</i> or <i>unscaled_models</i>.
+
+Unsurprisingly, there is a very large class imbalance issue, as we would not expect anywhere near half of MLB atbats to result in home runs.  The true ratio is about 97:3 in favor of non-home run atbats.  Therefore, this code makes use of oversampling to balance the dataset for training purposes.  Running through the code will allow you to evaluate models training on oversampled data and those trained on the unaltered data.  Once you select and save a model, you are ready to make predictions on current/future matchups.
 
 #### Predicting
 
