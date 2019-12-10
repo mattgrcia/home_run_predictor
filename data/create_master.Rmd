@@ -1,5 +1,5 @@
 ---
-title: "2019 MLB DFS"
+title: "create_master"
 author: "Matt Garcia"
 output: html_document
 ---
@@ -24,9 +24,9 @@ library(caret)
 # Creation of a SQLite database:
 
 ```{r}
-#db <- src_sqlite("pitchfx2018.sqlite3", create = T)
-#files <- c("inning/inning_hit.xml", "miniscoreboard.xml", "players.xml")
-#scrape(start = "2017-03-28", end = "2017-09-30", connect = db$con)
+db <- src_sqlite("pitchfx2018.sqlite3", create = T)
+files <- c("inning/inning_hit.xml", "miniscoreboard.xml", "players.xml")
+scrape(start = "2017-03-28", end = "2017-09-30", connect = db$con)
 ```
 
 
@@ -796,54 +796,9 @@ endend <- endend %>%
 # Writing to CSV
 
 ```{r}
-write.csv(endend, 'class_data.csv')
-```
-
-
-# Adding data to matchups created by Python
-
-```{r}
-matchup_info <- read.csv('matchups.csv')
-matchups <- collect(inner_join(matchup_info, batter_stats, by = c('batter_name')))
-matchups <- collect(inner_join(matchups, pitcher_stats, by = c('pitcher_name')))
-matchups <- matchups %>%
-  mutate(split_batter_BB = ifelse(p_throws == "R", batter_BBvsR, batter_BBvsL)) %>%
-  mutate(split_batter_K = ifelse(p_throws == "R", batter_KvsR, batter_KvsL)) %>%
-  mutate(split_batter_AVG = ifelse(p_throws == "R", batter_AVGvsR, batter_AVGvsL)) %>%
-  mutate(split_batter_OBP = ifelse(p_throws == "R", batter_OBPvsR, batter_OBPvsL)) %>%
-  mutate(split_batter_SLG = ifelse(p_throws == "R", batter_SLGvsR, batter_SLGvsL)) %>%
-  mutate(split_batter_ISO = ifelse(p_throws == "R", batter_ISOvsR, batter_ISOvsL)) %>%
-  mutate(split_batter_wRC = ifelse(p_throws == "R", batter_wRCvsR, batter_wRCvsL)) %>%
-  mutate(split_batter_wRAA = ifelse(p_throws == "R", batter_wRAAvsR, batter_wRAAvsL)) %>%
-  mutate(split_batter_wOBA = ifelse(p_throws == "R", batter_wOBAvsR, batter_wOBAvsL)) %>%
-  mutate(split_batter_GB = ifelse(p_throws == "R", batter_GBvsR, batter_GBvsL)) %>%
-  mutate(split_batter_LD = ifelse(p_throws == "R", batter_LDvsR, batter_LDvsL)) %>%
-  mutate(split_batter_FB = ifelse(p_throws == "R", batter_FBvsR, batter_FBvsL)) %>%
-  mutate(split_batter_HRFB = ifelse(p_throws == "R", batter_HRFBvsR, batter_HRFBvsL)) %>%
-  mutate(split_pitcher_BB = ifelse(stand == "R", pitcher_BBvsR, pitcher_BBvsL)) %>%
-  mutate(split_pitcher_K = ifelse(stand == "R", pitcher_KvsR, pitcher_KvsL)) %>%
-  mutate(split_pitcher_AVG = ifelse(stand == "R", pitcher_AVGvsR, pitcher_AVGvsL)) %>%
-  mutate(split_pitcher_OBP = ifelse(stand == "R", pitcher_OBPvsR, pitcher_OBPvsL)) %>%
-  mutate(split_pitcher_SLG = ifelse(stand == "R", pitcher_SLGvsR, pitcher_SLGvsL)) %>%
-  mutate(split_pitcher_ISO = ifelse(stand == "R", pitcher_ISOvsR, pitcher_ISOvsL)) %>%
-  mutate(split_pitcher_WHIP = ifelse(stand == "R", pitcher_WHIPvsR, pitcher_WHIPvsL)) %>%
-  mutate(split_pitcher_FIP = ifelse(stand == "R", pitcher_FIPvsR, pitcher_FIPvsL)) %>%
-  mutate(split_pitcher_GB = ifelse(stand == "R", pitcher_GBvsR, pitcher_GBvsL)) %>%
-  mutate(split_pitcher_LD = ifelse(stand == "R", pitcher_LDvsR, pitcher_LDvsL)) %>%
-  mutate(split_pitcher_FB = ifelse(stand == "R", pitcher_FBvsR, pitcher_FBvsL)) %>%
-  mutate(split_pitcher_HRFB = ifelse(stand == "R", pitcher_HRFBvsR, pitcher_HRFBvsL)) %>%
-  mutate(HZ_Score = ifelse(p_throws == "R", ifelse(stand=="R", (BVR1-PVR1)^2 + (BVR2-PVR2)^2 + (BVR3-PVR3)^2 + (BVR4-PVR4)^2 + (BVR5-PVR5)^2 + (BVR6-PVR6)^2 + (BVR7-PVR7)^2 + (BVR8-PVR8)^2 + (BVR9-PVR9)^2, (BVR1-PVL1)^2 + (BVR2-PVL2)^2 + (BVR3-PVL3)^2 + (BVR4-PVL4)^2 + (BVR5-PVL5)^2 + (BVR6-PVL6)^2 + (BVR7-PVL7)^2 + (BVR8-PVL8)^2 + (BVR9-PVL9)^2), ifelse(stand=="R", (BVL1-PVR1)^2 + (BVL2-PVR2)^2 + (BVL3-PVR3)^2 + (BVL4-PVR4)^2 + (BVL5-PVR5)^2 + (BVL6-PVR6)^2 + (BVL7-PVR7)^2 + (BVL8-PVR8)^2 + (BVL9-PVR9)^2, (BVL1-PVL1)^2 + (BVL2-PVL2)^2 + (BVL3-PVL3)^2 + (BVL4-PVL4)^2 + (BVL5-PVL5)^2 + (BVL6-PVL6)^2 + (BVL7-PVL7)^2 + (BVL8-PVL8)^2 + (BVL9-PVL9)^2))) %>%
-  select(batter_name, batter_BB, batter_K, batter_AVG, batter_OBP, batter_SLG, batter_ISO, batter_wRC, batter_wRAA, batter_wOBA, batter_LD, batter_FB, batter_HRFB, pitcher_BB, pitcher_K, pitcher_AVG, pitcher_OBP, pitcher_SLG, pitcher_ISO, pitcher_WHIP, pitcher_FIP, pitcher_LD, pitcher_FB, pitcher_HRFB, split_batter_BB, split_batter_K, split_batter_AVG, split_batter_OBP, split_batter_SLG, split_batter_ISO, split_batter_wRC, split_batter_wRAA, split_batter_wOBA, split_batter_LD, split_batter_FB, split_batter_HRFB, split_pitcher_BB, split_pitcher_K, split_pitcher_AVG, split_pitcher_OBP, split_pitcher_SLG, split_pitcher_ISO, split_pitcher_WHIP, split_pitcher_FIP, split_pitcher_LD, split_pitcher_FB, split_pitcher_HRFB, HZ_Score)
-matchups <- na.omit(matchups)
-matchups <- matchups %>%
-  filter(pitcher_WHIP != Inf) %>%
-  filter(split_batter_HRFB != Inf) %>%
-  filter(split_pitcher_HRFB != Inf) %>%
-  filter(batter_HRFB != Inf) %>%
-  filter(pitcher_HRFB != Inf) %>%
-  filter(pitcher_WHIP != Inf) %>%
-  filter(split_pitcher_WHIP != Inf)
-write.csv(matchups, 'home_run_predictions.csv')
+write.csv(endend, 'master.csv')
+write.csv(batter_stats, 'batter_stats.csv')
+write.csv(pitcher_stats, 'pitcher_stats.csv')
 ```
 
 
