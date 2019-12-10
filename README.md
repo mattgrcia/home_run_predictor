@@ -78,7 +78,18 @@ Unsurprisingly, there is a very large class imbalance issue, as we would not exp
 #### Predicting
 
 ```
-Main file - predictions/automated_predictions.ipynb
+File 1 - predictions/create_matchups.ipynb
+File 2 - predictions/create_matchups.Rmd
+File 3 - predictions/generate_predictions.ipynb
 ```
 
+Generating predictions for a specific day will take three steps.  First, you must use File 1 to scrape up-to-date information on projected starting pitchers and lineups.  After downloading your DraftKings playerpool file for the day (saved by default as 'DKSalaries.csv'), this code will spit out a file of pitcher-hitter matchups on which a model could predict, assuming the required stats were included.
+
+These stats are introduced by running File 2, which will then output a matchups file with all the stats you need to run File 3 and generate predictions for the day.
+
+
 ### Further Implementation
+
+To make this more scalable, stats should be left in and pulled from a SQL database, rather than my showcasing the ability to use R and Python.
+
+The DraftKings playerpool download will be automated once the 2020 baseball season rolls around.
